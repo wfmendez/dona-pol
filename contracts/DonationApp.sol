@@ -3,63 +3,63 @@ pragma solidity ^0.8.24;
 
 /**
  * @title DonationApp
- * @dev Un contrato simple para recibir donaciones y permitir que solo el propietario las retire.
+ * @dev A simple contract to receive donations and allow only the owner to withdraw them.
  */
 contract DonationApp {
-    // La dirección del propietario del contrato, establecida en el momento del despliegue.
-    // Es 'immutable' porque no cambiará durante la vida del contrato.
+    // The address of the contract owner, set at the time of deployment.
+    // It's 'immutable' because it will not change throughout the contract's life.
     address public immutable owner;
 
-    // Un evento que se emite cada vez que se recibe una nueva donación.
-    // Esto permite que el frontend escuche las donaciones en tiempo real.
+    // An event that is emitted every time a new donation is received.
+    // This allows the frontend to listen for donations in real-time.
     event DonationReceived(address indexed donor, uint256 amount, uint256 totalDonated, uint256 timestamp);
 
     /**
-     * @dev El constructor se ejecuta solo una vez, cuando se despliega el contrato.
-     * Establece la dirección que despliega el contrato como el propietario.
+     * @dev The constructor runs only once, when the contract is deployed.
+     * It sets the deploying address as the owner.
      */
     constructor() {
         owner = msg.sender;
     }
 
     /**
-     * @dev Una función 'receive' se ejecuta cuando el contrato recibe Ether (MATIC en Polygon)
-     * sin que se especifique ninguna otra función. Es la forma principal de donar.
-     * Debe ser 'payable'.
+     * @dev A 'receive' function is executed when the contract receives Ether (POL on Polygon)
+     * without any other function being specified. It is the main way to donate.
+     * It must be 'payable'.
      */
     receive() external payable {
-        // Asegurarse de que la donación no sea de cero.
-        require(msg.value > 0, "La donacion debe ser mayor que cero.");
+        // Ensure the donation is not zero.
+        require(msg.value > 0, "Donation must be greater than zero.");
 
-        // Obtener el balance total actual del contrato.
+        // Get the current total balance of the contract.
         uint256 totalBalance = address(this).balance;
 
-        // Emitir el evento con los detalles de la donación.
+        // Emit the event with the donation details.
         emit DonationReceived(msg.sender, msg.value, totalBalance, block.timestamp);
     }
 
     /**
-     * @dev Permite al propietario del contrato retirar el balance completo.
+     * @dev Allows the contract owner to withdraw the entire balance.
      */
     function withdraw() external {
-        // Solo el propietario puede llamar a esta función.
-        require(msg.sender == owner, "Solo el propietario puede retirar fondos.");
+        // Only the owner can call this function.
+        require(msg.sender == owner, "Only the owner can withdraw funds.");
 
-        // Obtener el balance total del contrato.
+        // Get the total balance of the contract.
         uint256 balance = address(this).balance;
 
-        // Asegurarse de que haya fondos para retirar.
-        require(balance > 0, "No hay fondos para retirar.");
+        // Ensure there are funds to withdraw.
+        require(balance > 0, "There are no funds to withdraw.");
 
-        // Transferir el balance a la dirección del propietario.
-        // Se usa .call en lugar de .transfer o .send por seguridad y eficiencia de gas.
+        // Transfer the balance to the owner's address.
+        // .call is used instead of .transfer or .send for security and gas efficiency.
         (bool success, ) = owner.call{value: balance}("");
-        require(success, "La transferencia de fondos fallo.");
+        require(success, "Fund transfer failed.");
     }
 
     /**
-     * @dev Una función de vista pública para que cualquiera pueda consultar el balance del contrato.
-     * No consume gas si se llama externamente.
+     * @dev A public view function for anyone to query the contract's balance.
+     * It does not consume gas when called externally.
      */
     function getContractBalance() external view returns (uint256) {
         return address(this).balance;
