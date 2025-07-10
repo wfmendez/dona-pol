@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import './App.css'; 
+import './App.css';
+import donaPolLogo from './assets/dona-pol-logo.svg'; 
 
 const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
@@ -202,6 +203,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <img src={donaPolLogo} className="logo" alt="Dona-Pol logo" />
         <h1>Dona-Pol</h1>
         <p>{message}</p>
         
