@@ -2,7 +2,7 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  /* El texto centrado puede funcionar para algunas dApps, pero considera alineación a la izquierda para contenido más denso */
+  /* Centered text might work for some dApps, but consider left alignment for denser content */
   text-align: center;
 }
 
@@ -13,18 +13,18 @@
   transition: filter 300ms;
 }
 
-/* Aplicando el color #fbc126 para la sombra al pasar el ratón en el logo principal */
+/* Applying color #fbc126 for the shadow on the main logo when hovered */
 .logo:hover {
   filter: drop-shadow(0 0 2em #fbc126aa);
-  /* Usamos el amarillo brillante con transparencia */
+  /* Using bright yellow with transparency */
 }
 
-/* Si tu dApp usa el logo de React, podrías considerar un color de tu paleta aquí también,
-   o mantener el verde de React si quieres conservar esa referencia visual.
-   Aquí lo cambiamos a #cf3cb5aa para mantener la coherencia. */
+/* If your dApp uses the React logo, you might consider a color from your palette here,
+   or keep React's green if you want to preserve that visual reference.
+   Here, we're changing it to #cf3cb5aa for consistency. */
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #cf3cb5aa);
-  /* Usamos el magenta vibrante con transparencia */
+  /* Using vibrant magenta with transparency */
 }
 
 @keyframes logo-spin {
@@ -45,35 +45,34 @@
 
 .card {
   padding: 2em;
-  /* Podrías añadir un color de fondo para las tarjetas, como un degradado sutil o un color sólido de tu paleta.
-     Por ejemplo, un fondo sutil del #335581 con algo de transparencia o un blanco puro en modo claro. */
+  /* You could add a background color for cards, like a subtle gradient or a solid color from your palette.
+     For example, a subtle background of #335581 with some transparency, or pure white in light mode. */
   background-color: rgba(51, 85, 129, 0.1);
-  /* Ligero toque de tu azul oscuro */
+  /* Slight touch of your dark blue */
   border-radius: 12px;
-  /* Un poco más de borde para un look moderno */
+  /* Slightly more border-radius for a modern look */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  /* Sombra sutil para profundidad */
+  /* Subtle shadow for depth */
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  /* Pequeño levantamiento al pasar el ratón */
+  /* Small lift when hovered */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  /* Sombra más pronunciada */
+  /* More pronounced shadow */
 }
-
 
 .read-the-docs {
-  /* Usamos un color de tu paleta para este texto secundario, como #6b42ca */
+  /* Using a color from your palette for this secondary text, like #6b42ca */
   color: #6b42ca;
   font-size: 0.9em;
-  /* Ligeramente más pequeño para indicar que es secundario */
+  /* Slightly smaller to indicate it's secondary */
   opacity: 0.8;
-  /* Un poco de transparencia para suavizarlo */
+  /* A bit of transparency to soften it */
 }
 
-/* Ajustes para el modo claro en .app.css */
+/* Adjustments for light mode in .app.css */
 @media (prefers-color-scheme: light) {
   .logo:hover {
     filter: drop-shadow(0 0 2em #fbc126aa);
@@ -85,7 +84,7 @@
 
   .card {
     background-color: rgba(255, 255, 255, 0.8);
-    /* Fondo claro para tarjetas */
+    /* Light background for cards */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 }
