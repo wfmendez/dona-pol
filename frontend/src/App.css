@@ -80,3 +80,24 @@ section {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 }
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.donation-card input[type="number"]::-webkit-outer-spin-button,
+.donation-card input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+button {
+  margin-top: 1em;
+}
+
+label {
+  margin-bottom: 1em;
+  margin-top: -0.5em;
+}

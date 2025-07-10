@@ -88,3 +88,22 @@ button:focus-visible {
     color: #ffffff;
   }
 }
+
+#donation-amount {
+  border: 2px solid transparent;
+  height: 2.5em;
+  padding-left: 0.8em;
+  outline: none;
+  overflow: hidden;
+  background-color: #F3F3F3;
+  color: #071527;
+  border-radius: 10px;
+  transition: all 0.5s;
+}
+
+#donation-amount:hover,
+#donation-amount:focus {
+  border: 2px solid #4A9DEC;
+  box-shadow: 0px 0px 0px 7px rgb(74, 157, 236, 20%);
+  background-color: white;
+}

@@ -215,14 +215,21 @@ function App() {
           <p className="balance">{contractBalance} POL (local)</p>
         </div>
 
-        <div className="card">
+        <div className="card donation-card">
           <h3>Make a Donation</h3>
-          <input
-            type="number"
-            value={donationAmount}
-            onChange={(e) => setDonationAmount(e.target.value)}
-            placeholder="e.g., 0.01"
-          />
+          <div className="input-group"> 
+            <label htmlFor="donation-amount">Amount to Donate (POL)</label>
+            <input
+              id="donation-amount" 
+              type="number"
+              value={donationAmount}
+              onChange={(e) => setDonationAmount(e.target.value)}
+              placeholder="0"
+              min="0" 
+              step="1"
+              aria-label="Amount to donate in POL" 
+              />
+          </div>
           <button onClick={handleDonate} disabled={!signer}>
             Donate
           </button>
