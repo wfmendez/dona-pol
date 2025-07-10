@@ -2,7 +2,6 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  /* Centered text might work for some dApps, but consider left alignment for denser content */
   text-align: center;
 }
 
@@ -13,18 +12,12 @@
   transition: filter 300ms;
 }
 
-/* Applying color #fbc126 for the shadow on the main logo when hovered */
 .logo:hover {
   filter: drop-shadow(0 0 2em #fbc126aa);
-  /* Using bright yellow with transparency */
 }
 
-/* If your dApp uses the React logo, you might consider a color from your palette here,
-   or keep React's green if you want to preserve that visual reference.
-   Here, we're changing it to #cf3cb5aa for consistency. */
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #cf3cb5aa);
-  /* Using vibrant magenta with transparency */
 }
 
 @keyframes logo-spin {
@@ -43,36 +36,37 @@
   }
 }
 
+section {
+  display: flex;
+  flex-direction: row;
+}
+
+@media (max-width: 600px) {
+  section {
+    flex-direction: column;
+  } 
+}
+
 .card {
   padding: 2em;
-  /* You could add a background color for cards, like a subtle gradient or a solid color from your palette.
-     For example, a subtle background of #335581 with some transparency, or pure white in light mode. */
   background-color: rgba(51, 85, 129, 0.1);
-  /* Slight touch of your dark blue */
   border-radius: 12px;
-  /* Slightly more border-radius for a modern look */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  /* Subtle shadow for depth */
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  margin: 20px;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  /* Small lift when hovered */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  /* More pronounced shadow */
 }
 
 .read-the-docs {
-  /* Using a color from your palette for this secondary text, like #6b42ca */
   color: #6b42ca;
   font-size: 0.9em;
-  /* Slightly smaller to indicate it's secondary */
   opacity: 0.8;
-  /* A bit of transparency to soften it */
 }
 
-/* Adjustments for light mode in .app.css */
 @media (prefers-color-scheme: light) {
   .logo:hover {
     filter: drop-shadow(0 0 2em #fbc126aa);
@@ -84,7 +78,6 @@
 
   .card {
     background-color: rgba(255, 255, 255, 0.8);
-    /* Light background for cards */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 }

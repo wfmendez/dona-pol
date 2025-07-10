@@ -207,6 +207,7 @@ function App() {
         
         {walletAddress && <p className="address"><strong>Your Address:</strong> {walletAddress}</p>}
         
+        <section>
         <div className="card">
           <h2>Contract Balance</h2>
           <p className="balance">{contractBalance} POL (local)</p>
@@ -224,6 +225,7 @@ function App() {
             Donate
           </button>
         </div>
+        </section>
 
         {isOwner && (
           <div className="card owner-card">
