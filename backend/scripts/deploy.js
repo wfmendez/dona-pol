@@ -1,24 +1,43 @@
-// Import the ethers library from Hardhat to interact with the blockchain.
 const hre = require("hardhat");
+const fs = require("fs");
+const path = require("path");
 
 async function main() {
-  // Get the ContractFactory for our DonationApp contract.
   const DonationApp = await hre.ethers.getContractFactory("DonationApp");
-
-  // Deploy the contract.
-  // This sends the contract creation transaction to the network.
   console.log("Deploying the DonationApp contract...");
+  
   const donationAppContract = await DonationApp.deploy();
-
-  // Wait for the contract to be deployed and mined on the blockchain.
   await donationAppContract.waitForDeployment();
-
-  // Get the deployed contract's address and log it to the console.
+  
   const contractAddress = await donationAppContract.getAddress();
   console.log(`DonationApp contract deployed to: ${contractAddress}`);
+
+  await saveFrontendFiles(contractAddress);
 }
 
-// Pattern to handle async functions and errors.
+async function saveFrontendFiles(contractAddress) {
+  const contractsDir = path.join(__dirname, "..", "..", "frontend", "src", "config");
+
+  if (!fs.existsSync(contractsDir)) {
+    fs.mkdirSync(contractsDir, { recursive: true });
+  }
+
+  // Guardar la dirección del contrato
+  fs.writeFileSync(
+    path.join(contractsDir, "contract-address.json"),
+    JSON.stringify({ DonationApp: contractAddress }, undefined, 2)
+  );
+
+  // Extraer y guardar el ABI
+  const DonationAppArtifact = await hre.artifacts.readArtifact("DonationApp");
+  fs.writeFileSync(
+    path.join(contractsDir, "abi.json"),
+    JSON.stringify(DonationAppArtifact.abi, null, 2)
+  );
+  
+  console.log("-> Configuración del frontend (abi.json y contract-address.json) actualizada automáticamente.");
+}
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
