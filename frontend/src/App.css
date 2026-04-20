@@ -1,8 +1,4 @@
-.App {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+/* Styles moved to Tailwind */
 
 .App-header {
   flex: 1;

@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Frontend (Vite)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "frontend",
+      "port": 5173
+    },
+    {
+      "name": "Hardhat Node",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["hardhat", "node"],
+      "cwd": "backend",
+      "port": 8545
+    }
+  ]
+}

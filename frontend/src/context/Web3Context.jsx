@@ -2,6 +2,8 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { ethers } from 'ethers';
 import { CONTRACT_ADDRESS, DONATION_FACTORY_ABI } from '../config/constants';
 
+const SUPPORTED_CHAIN_IDS = [31337, 80002];
+
 const Web3Context = createContext();
 
 export const useWeb3 = () => useContext(Web3Context);
@@ -12,59 +14,62 @@ export const Web3Provider = ({ children }) => {
   const [contract, setContract] = useState(null);
   const [contractBalance, setContractBalance] = useState('0');
   const [isOwner, setIsOwner] = useState(false);
-  const [message, setMessage] = useState('Welcome! Connect your wallet to get started.');
   const [isLoading, setIsLoading] = useState(false);
+  const [chainId, setChainId] = useState(null);
+  const [lastTxHash, setLastTxHash] = useState(null);
+
+  const isWrongNetwork = chainId !== null && !SUPPORTED_CHAIN_IDS.includes(chainId);
 
   const updateBalance = async (currentContract) => {
     if (!currentContract) return;
     try {
       const balance = await currentContract.getContractBalance();
-      setContractBalance(ethers.formatEther(balance)); // Convert Wei to Ether for display
+      setContractBalance(ethers.formatEther(balance));
     } catch (error) {
-      console.error("Error fetching balance:", error);
+      console.error('Error fetching balance:', error);
     }
   };
 
   const connectWallet = async () => {
-    if (window.ethereum) {
-      try {
-        setIsLoading(true);
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        
-        // Request user to connect their MetaMask account
-        const accounts = await provider.send("eth_requestAccounts", []);
-        setWalletAddress(accounts[0]);
-        
-        // Get the signer, needed to send transactions
-        const web3Signer = await provider.getSigner();
-        setSigner(web3Signer);
-        
-        // Create an instance of the contract we can interact with
-        const donationContract = new ethers.Contract(CONTRACT_ADDRESS, DONATION_FACTORY_ABI, web3Signer);
-        setContract(donationContract);
+    if (!window.ethereum) return;
+    try {
+      setIsLoading(true);
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const accounts = await provider.send('eth_requestAccounts', []);
+      const network = await provider.getNetwork();
+      setChainId(Number(network.chainId));
+      setWalletAddress(accounts[0]);
 
-        // Check if the connected address is the contract owner
-        const ownerAddress = await donationContract.owner();
-        setIsOwner(accounts[0].toLowerCase() === ownerAddress.toLowerCase());
+      const web3Signer = await provider.getSigner();
+      setSigner(web3Signer);
 
-        setMessage('Wallet connected successfully.');
-        await updateBalance(donationContract);
+      const donationContract = new ethers.Contract(CONTRACT_ADDRESS, DONATION_FACTORY_ABI, web3Signer);
+      setContract(donationContract);
 
-      } catch (error) {
-        console.error("Error connecting wallet:", error);
-        setMessage('Error connecting. Check the console for more details.');
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      setMessage('MetaMask is not installed. Please install it.');
+      const ownerAddress = await donationContract.owner();
+      setIsOwner(accounts[0].toLowerCase() === ownerAddress.toLowerCase());
+
+      await updateBalance(donationContract);
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const switchToAmoy = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x13882' }],
+      });
+    } catch (error) {
+      console.error('Error switching network:', error);
     }
   };
 
   useEffect(() => {
     connectWallet();
-
-    // Set up listeners to reload the page if the user changes account or network
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', () => window.location.reload());
       window.ethereum.on('chainChanged', () => window.location.reload());
@@ -72,69 +77,54 @@ export const Web3Provider = ({ children }) => {
   }, []);
 
   const donate = async (donationAmount) => {
-    if (!contract || !donationAmount || parseFloat(donationAmount) <= 0) {
-      setMessage('Please enter a valid amount to donate.');
-      return;
-    }
-
+    if (!contract || !donationAmount || parseFloat(donationAmount) <= 0) return;
     try {
       setIsLoading(true);
-      setMessage(`Processing donation of ${donationAmount} POL...`);
       const amountInWei = ethers.parseEther(donationAmount);
-      
-      const tx = await signer.sendTransaction({
-        to: CONTRACT_ADDRESS,
-        value: amountInWei
-      });
-
-      await tx.wait(); 
-
-      setMessage(`Thank you for your donation of ${donationAmount} POL!`);
-      await updateBalance(contract); 
+      const tx = await signer.sendTransaction({ to: CONTRACT_ADDRESS, value: amountInWei });
+      await tx.wait();
+      setLastTxHash(tx.hash);
+      await updateBalance(contract);
     } catch (error) {
-      console.error("Error during donation:", error);
-      setMessage(`Donation error: ${error.reason || 'Transaction rejected.'}`);
+      console.error('Error during donation:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
   const withdraw = async () => {
-    if (!contract || !isOwner) {
-      setMessage("Action not allowed. Only the owner can withdraw funds.");
-      return;
-    }
-
+    if (!contract || !isOwner) return;
     try {
       setIsLoading(true);
-      setMessage("Withdrawing funds...");
-      const tx = await contract.withdraw(); 
+      const tx = await contract.withdraw();
       await tx.wait();
-
-      setMessage("Funds withdrawn successfully!");
-      await updateBalance(contract); 
+      await updateBalance(contract);
     } catch (error) {
-      console.error("Error during withdrawal:", error);
-      setMessage(`Withdrawal error: ${error.reason || 'Transaction rejected.'}`);
+      console.error('Error during withdrawal:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
+  const clearLastTx = () => setLastTxHash(null);
+
   return (
-    <Web3Context.Provider
-      value={{
-        walletAddress,
-        contractBalance,
-        isOwner,
-        message,
-        isLoading,
-        connectWallet,
-        donate,
-        withdraw,
-        setMessage
-      }}
-    >
+    <Web3Context.Provider value={{
+      walletAddress,
+      contractBalance,
+      isOwner,
+      isLoading,
+      chainId,
+      isWrongNetwork,
+      lastTxHash,
+      connectWallet,
+      switchToAmoy,
+      donate,
+      withdraw,
+      clearLastTx,
+    }}>
       {children}
     </Web3Context.Provider>
   );

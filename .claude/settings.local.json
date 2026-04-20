@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm install *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__computer",
+      "Bash(node -e \"import\\('./postcss.config.js'\\).then\\(m => console.log\\('OK:', JSON.stringify\\(m.default\\)\\)\\).catch\\(e => console.error\\('ERR:', e.message\\)\\)\")",
+      "Bash(npx tailwindcss *)",
+      "Bash(node -e ' *)",
+      "mcp__Claude_in_Chrome__read_network_requests",
+      "mcp__Claude_in_Chrome__javascript_tool",
+      "Bash(node -e \"const v = require\\('./node_modules/vite/package.json'\\); console.log\\('vite:', v.version\\)\")",
+      "Bash(node -e \"const t = require\\('./node_modules/tailwindcss/package.json'\\); console.log\\('tailwind:', t.version\\)\")",
+      "Bash(git add *)"
+    ]
+  }
+}
