@@ -13,7 +13,10 @@
       "mcp__Claude_in_Chrome__javascript_tool",
       "Bash(node -e \"const v = require\\('./node_modules/vite/package.json'\\); console.log\\('vite:', v.version\\)\")",
       "Bash(node -e \"const t = require\\('./node_modules/tailwindcss/package.json'\\); console.log\\('tailwind:', t.version\\)\")",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(gh run *)",
+      "Bash(gh api *)",
+      "Bash(node -e \"const {execSync}=require\\('child_process'\\); try{execSync\\('curl -s https://rpc-amoy.polygon.technology/ -X POST -H \\\\\"Content-Type: application/json\\\\\" -d \\\\\"{\\\\\\\\\\\\\"jsonrpc\\\\\\\\\\\\\":\\\\\\\\\\\\\"2.0\\\\\\\\\\\\\",\\\\\\\\\\\\\"method\\\\\\\\\\\\\":\\\\\\\\\\\\\"eth_blockNumber\\\\\\\\\\\\\",\\\\\\\\\\\\\"params\\\\\\\\\\\\\":[],\\\\\\\\\\\\\"id\\\\\\\\\\\\\":1}\\\\\"', {timeout:5000}\\).toString\\(\\); console.log\\('Amoy RPC OK'\\)} catch\\(e\\){console.log\\('Amoy RPC FAIL'\\)}\")"
     ]
   }
 }
