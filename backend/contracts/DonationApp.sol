@@ -2,65 +2,81 @@
 pragma solidity ^0.8.24;
 
 /**
- * @title DonationApp
- * @dev A simple contract to receive donations and allow only the owner to withdraw them.
+ * @title DonationApp v2
+ * @dev Accepts POL donations with optional on-chain messages.
+ *      Tracks unique donors and emits full event data for real-time frontends.
  */
 contract DonationApp {
-    // The address of the contract owner, set at the time of deployment.
-    // It's 'immutable' because it will not change throughout the contract's life.
+    // ── State ──────────────────────────────────────────────────────────────────
     address public immutable owner;
 
-    // An event that is emitted every time a new donation is received.
-    // This allows the frontend to listen for donations in real-time.
-    event DonationReceived(address indexed donor, uint256 amount, uint256 totalDonated, uint256 timestamp);
+    /// @notice Total amount donated per address (in wei)
+    mapping(address => uint256) public totalDonatedBy;
 
-    /**
-     * @dev The constructor runs only once, when the contract is deployed.
-     * It sets the deploying address as the owner.
-     */
+    /// @notice Number of unique donor addresses
+    uint256 public donorCount;
+
+    // ── Events ─────────────────────────────────────────────────────────────────
+    event DonationReceived(
+        address indexed donor,
+        uint256 amount,
+        uint256 totalBalance,
+        uint256 timestamp,
+        string  message
+    );
+
+    // ── Constructor ────────────────────────────────────────────────────────────
     constructor() {
         owner = msg.sender;
     }
 
+    // ── Donation entry-points ─────────────────────────────────────────────────
+
     /**
-     * @dev A 'receive' function is executed when the contract receives Ether (POL on Polygon)
-     * without any other function being specified. It is the main way to donate.
-     * It must be 'payable'.
+     * @dev Plain ETH transfer (no message).  Triggered by MetaMask's
+     *      sendTransaction({ to: CONTRACT_ADDRESS, value: ... }).
      */
     receive() external payable {
-        // Ensure the donation is not zero.
         require(msg.value > 0, "Donation must be greater than zero.");
-
-        // Get the current total balance of the contract.
-        uint256 totalBalance = address(this).balance;
-
-        // Emit the event with the donation details.
-        emit DonationReceived(msg.sender, msg.value, totalBalance, block.timestamp);
+        _processDonation("");
     }
 
     /**
-     * @dev Allows the contract owner to withdraw the entire balance.
+     * @dev Donate with an optional on-chain message (max ~280 chars recommended).
+     *      Called via contract.donate(message, { value: ... }).
      */
+    function donate(string calldata message) external payable {
+        require(msg.value > 0, "Donation must be greater than zero.");
+        _processDonation(message);
+    }
+
+    // ── Internal ───────────────────────────────────────────────────────────────
+    function _processDonation(string memory message) internal {
+        // Track unique donors
+        if (totalDonatedBy[msg.sender] == 0) {
+            donorCount++;
+        }
+        totalDonatedBy[msg.sender] += msg.value;
+
+        emit DonationReceived(
+            msg.sender,
+            msg.value,
+            address(this).balance,
+            block.timestamp,
+            message
+        );
+    }
+
+    // ── Owner actions ──────────────────────────────────────────────────────────
     function withdraw() external {
-        // Only the owner can call this function.
         require(msg.sender == owner, "Only the owner can withdraw funds.");
-
-        // Get the total balance of the contract.
         uint256 balance = address(this).balance;
-
-        // Ensure there are funds to withdraw.
         require(balance > 0, "There are no funds to withdraw.");
-
-        // Transfer the balance to the owner's address.
-        // .call is used instead of .transfer or .send for security and gas efficiency.
         (bool success, ) = owner.call{value: balance}("");
         require(success, "Fund transfer failed.");
     }
 
-    /**
-     * @dev A public view function for anyone to query the contract's balance.
-     * It does not consume gas when called externally.
-     */
+    // ── View helpers ───────────────────────────────────────────────────────────
     function getContractBalance() external view returns (uint256) {
         return address(this).balance;
     }

@@ -5,7 +5,7 @@ import ActivityFeed from './ActivityFeed';
 import PolygonArt from './PolygonArt';
 
 const HomePage = () => {
-  const { contractBalance } = useWeb3();
+  const { contractBalance, donorCount, donations } = useWeb3();
   const balanceNum = parseFloat(contractBalance) || 0;
   const goal       = 12;
   const progress   = Math.min(Math.round((balanceNum / goal) * 100), 100);
@@ -37,11 +37,20 @@ const HomePage = () => {
             </div>
             <div className="bg-surface-container px-5 py-3 rounded-xl border border-white/5 flex flex-col">
               <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Donors</span>
-              <span className="text-2xl font-headline font-extrabold text-on-surface">47</span>
+              <span className="text-2xl font-headline font-extrabold text-on-surface">{donorCount || '—'}</span>
             </div>
             <div className="bg-surface-container px-5 py-3 rounded-xl border border-white/5 flex flex-col">
-              <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Last Active</span>
-              <span className="text-2xl font-headline font-extrabold text-on-surface">2 min ago</span>
+              <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Last Donation</span>
+              <span className="text-2xl font-headline font-extrabold text-on-surface">
+                {donations[0]
+                  ? (() => {
+                      const diff = Math.floor((Date.now() - donations[0].timestamp.getTime()) / 1000);
+                      if (diff < 60) return `${diff}s ago`;
+                      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+                      return `${Math.floor(diff / 3600)}h ago`;
+                    })()
+                  : '—'}
+              </span>
             </div>
           </div>
         </div>

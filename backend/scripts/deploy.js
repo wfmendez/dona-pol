@@ -50,11 +50,16 @@ async function saveFrontendFiles(contractAddress) {
 
   console.log("📁 Frontend config updated:");
   console.log(`   contract-address.json → ${contractAddress}`);
+  console.log(`   abi.json              → DonationApp v2 ABI (donate + donorCount + messages)`);
   console.log(`   frontend/.env         → VITE_CONTRACT_ADDRESS="${contractAddress}"`);
   console.log("\n📋 Next steps:");
   console.log("   1. Add VITE_CONTRACT_ADDRESS to your Vercel environment variables");
   console.log(`      Value: ${contractAddress}`);
-  console.log("   2. git add -A && git commit -m 'deploy: contract on Amoy' && git push");
+  console.log("   2. git add -A && git commit -m 'deploy: DonationApp v2 on Amoy' && git push");
+  console.log("\n✨ New features in v2:");
+  console.log("   • donate(string message) — on-chain donation messages");
+  console.log("   • donorCount()           — unique donor tracking");
+  console.log("   • totalDonatedBy(addr)   — per-address total");
 }
 
 main().catch((err) => {
